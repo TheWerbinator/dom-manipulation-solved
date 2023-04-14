@@ -37,4 +37,56 @@
  * * add the event listener to the container, pass the callback.
  */
 
-// Your code goes here...
+const allItems = document.querySelector('.cardsContainer');
+
+const red = () => {
+  Array.from(allItems.children).forEach((item) => {
+    if (localStorage.getItem('Favs')) {
+      if (localStorage.getItem('Favs').includes(item.id)) {
+        item.classList.add('red')
+      } else {
+        item.classList.remove('red')
+      }
+    } else {
+      item.classList.remove('red')
+    }
+  })
+}
+
+red();
+
+const addFav = (id) => {
+  if (localStorage.getItem('Favs')) {
+    let LSFavs = localStorage.getItem('Favs').split(',');
+    LSFavs.push(id);
+    localStorage.setItem('Favs', LSFavs);
+  } else {
+    localStorage.setItem('Favs', id);
+  }
+}
+
+const removeFav = (id) => {
+  let LSFavs = localStorage.getItem('Favs').split(',');
+  const index = LSFavs.indexOf(id);
+  LSFavs.splice(index, 1);
+  localStorage.setItem('Favs', LSFavs);
+}
+
+const callbackFn = (e) => {
+  const item = e.target.id;
+  if (!isNaN(parseInt(e.target.id))) {
+    if (localStorage.getItem('Favs')) {
+      let LSFavs = localStorage.getItem('Favs').split(',');
+      if (LSFavs.includes(item)) {
+        removeFav(item);
+      } else {
+        addFav(item);
+      }
+    } else {
+      addFav(item);
+    }
+  }
+  red();
+};
+
+allItems.addEventListener('click', callbackFn)
