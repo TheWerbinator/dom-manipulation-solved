@@ -39,21 +39,23 @@
 
 const allItems = document.querySelector('.cardsContainer');
 
-const red = () => {
+const recolor = () => {
   Array.from(allItems.children).forEach((item) => {
-    if (localStorage.getItem('Favs')) {
-      if (localStorage.getItem('Favs').includes(item.id)) {
-        item.classList.add('red')
-      } else {
-        item.classList.remove('red')
-      }
+    const favs = localStorage.getItem('Favs');
+    if (!favs) {
+      item.classList.remove('red')
+      return
+    }
+    if (favs.includes(item.id)) {
+      item.classList.add('red')
     } else {
       item.classList.remove('red')
     }
+
   })
 }
 
-red();
+recolor();
 
 const addFav = (id) => {
   if (localStorage.getItem('Favs')) {
@@ -72,21 +74,24 @@ const removeFav = (id) => {
   localStorage.setItem('Favs', LSFavs);
 }
 
-const callbackFn = (e) => {
+const clickHandler = (e) => {
   const item = e.target.id;
-  if (!isNaN(parseInt(e.target.id))) {
-    if (localStorage.getItem('Favs')) {
-      let LSFavs = localStorage.getItem('Favs').split(',');
-      if (LSFavs.includes(item)) {
-        removeFav(item);
-      } else {
-        addFav(item);
-      }
-    } else {
-      addFav(item);
-    }
+  if (isNaN(parseInt(item))) {
+    recolor();
+    return
   }
-  red();
+  if (!localStorage.getItem('Favs')) {
+    addFav(item);
+    recolor();
+    return
+  }
+  let LSFavs = localStorage.getItem('Favs').split(',');
+  if (LSFavs.includes(item)) {
+    removeFav(item);
+  } else {
+    addFav(item);
+  }
+  recolor();
 };
 
-allItems.addEventListener('click', callbackFn)
+allItems.addEventListener('click', clickHandler)
